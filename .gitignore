@@ -1,0 +1,9 @@
+*.exe
+*.dll
+*.pdb
+*.cache
+*.txt
+AdventOfCode2019/ConsoleApp1/obj/
+*.json
+*.ide-wal
+AdventOfCode2019/.vs/AdventOfCode2019/v16/
