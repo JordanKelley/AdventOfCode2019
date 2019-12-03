@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ConsoleApp1.Days.Two
 {
@@ -10,11 +8,38 @@ namespace ConsoleApp1.Days.Two
         {
             int[] testInput = Input.TestInput;
 
-            for(int i = 0; i < testInput.Length; i += 4)
+            return ProcessIntCode(testInput);
+        }
+
+        public static int[] PartTwo()
+        {
+            for(int i = 0; i < 100; i++)
+            {
+                for(var j = 0; j < 100; j++)
+                {
+                    int[] testInput = new int[Input.TestInput.Length];
+                    Array.Copy(Input.TestInput, 0, testInput, 0, Input.TestInput.Length);
+
+                    testInput[1] = i;
+                    testInput[2] = j;
+                    ProcessIntCode(testInput);
+
+                    if(testInput[0] == 19690720)
+                    {
+                        return testInput;
+                    }
+                }
+            }
+            throw new Exception("The desired output value was never found");
+        }
+
+        private static int[] ProcessIntCode(int[] testInput)
+        {
+            for (int i = 0; i < testInput.Length; i += 4)
             {
                 OpcodeEnum opcode = GetOpcode(i, testInput);
 
-                if(opcode == OpcodeEnum.EndProgram)
+                if (opcode == OpcodeEnum.EndProgram)
                 {
                     return testInput;
                 }

@@ -8,7 +8,7 @@ namespace ConsoleApp1
     {
         static void Main(string[] args)
         {
-            var arr = DayTwo.PartOne();
+            var arr = DayTwo.PartTwo();
         }
     }
 }
