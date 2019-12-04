@@ -1,6 +1,7 @@
 ﻿using System;
 using ConsoleApp1.Days.One;
 using ConsoleApp1.Days.Two;
+using ConsoleApp1.Days.Three;
 
 namespace ConsoleApp1
 {
@@ -8,7 +9,7 @@ namespace ConsoleApp1
     {
         static void Main(string[] args)
         {
-            var arr = DayTwo.PartTwo();
+            Console.WriteLine(DayThree.PartOne());
         }
     }
 }
