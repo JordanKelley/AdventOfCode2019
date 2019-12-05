@@ -11,7 +11,9 @@ namespace ConsoleApp1.Days.Three
         private List<string> WireTwoPoints;
         private List<Coordinate> WireOneCoordinates = new List<Coordinate>();
         private List<Coordinate> WireTwoCoordinates = new List<Coordinate>();
+
         public int ClosestIntersectionDistance { get; private set; }
+        public int IntersectionWithLeastSteps { get; private set; }
         public Grid(List<string> wireOnePoints, List<string> wireTwoPoints)
         {
             WireOnePoints = wireOnePoints;
@@ -19,6 +21,7 @@ namespace ConsoleApp1.Days.Three
 
             Build();
             DetermineClosestIntersectionDistance();
+            DetermineIntersectionWithLeastSteps();
          }
 
         private void Build()
@@ -74,7 +77,7 @@ namespace ConsoleApp1.Days.Three
 
         private void DetermineClosestIntersectionDistance()
         {
-            List<Coordinate> intersections = WireOneCoordinates.Where(wireOne => WireTwoCoordinates.Any(wireTwo => wireOne.X == wireTwo.X && wireOne.Y == wireTwo.Y)).ToList();
+            List<Coordinate> intersections = WireOneCoordinates.Intersect(WireTwoCoordinates).ToList();
 
             List<int> distancesCalculated = new List<int>();
 
@@ -84,6 +87,22 @@ namespace ConsoleApp1.Days.Three
                 distancesCalculated.Add(distanceCalculated);
             }
             ClosestIntersectionDistance = distancesCalculated.Min(x => x);
+        }
+
+        private void DetermineIntersectionWithLeastSteps()
+        {
+            List<Coordinate> intersections = WireOneCoordinates.Intersect(WireTwoCoordinates).ToList();
+
+            List<int> totalSteps = new List<int>();
+
+            foreach (Coordinate intersection in intersections)
+            {
+                int wireOneSteps = WireOneCoordinates.IndexOf(intersection) + 1;
+                int wireTwoSteps = WireTwoCoordinates.IndexOf(intersection) + 1;
+
+                totalSteps.Add(wireOneSteps + wireTwoSteps);
+            }
+            IntersectionWithLeastSteps = totalSteps.Min(x => x);
         }
     }
 }

@@ -11,5 +11,11 @@ namespace ConsoleApp1.Days.Three
             Grid grid = new Grid(Input.WireOne, Input.WireTwo);
             return grid.ClosestIntersectionDistance;
         }
+
+        public static int PartTwo()
+        {
+            Grid grid = new Grid(Input.WireOne, Input.WireTwo);
+            return grid.IntersectionWithLeastSteps;
+        }
     }
 }
