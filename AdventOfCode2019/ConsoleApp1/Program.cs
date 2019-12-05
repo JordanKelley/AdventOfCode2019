@@ -2,6 +2,7 @@
 using ConsoleApp1.Days.One;
 using ConsoleApp1.Days.Two;
 using ConsoleApp1.Days.Three;
+using ConsoleApp1.Days.Four;
 
 namespace ConsoleApp1
 {
@@ -9,7 +10,7 @@ namespace ConsoleApp1
     {
         static void Main(string[] args)
         {
-            Console.WriteLine(DayThree.PartTwo());
+            Console.WriteLine(DayFour.PartTwo());
         }
     }
 }
