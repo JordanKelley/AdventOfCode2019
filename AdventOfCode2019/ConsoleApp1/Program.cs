@@ -3,6 +3,7 @@ using ConsoleApp1.Days.One;
 using ConsoleApp1.Days.Two;
 using ConsoleApp1.Days.Three;
 using ConsoleApp1.Days.Four;
+using ConsoleApp1.Days.Five;
 
 namespace ConsoleApp1
 {
@@ -10,7 +11,7 @@ namespace ConsoleApp1
     {
         static void Main(string[] args)
         {
-            Console.WriteLine(DayFour.PartTwo());
+            Console.WriteLine(DayFive.PartOne());
         }
     }
 }
