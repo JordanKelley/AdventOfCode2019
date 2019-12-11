@@ -11,12 +11,21 @@ namespace ConsoleApp1.Days.Five
         {
             int[] testInput = Input.TestInput;
 
-            InterpretIntCode(testInput);
+            InterpretIntCode(testInput, true);
 
             return OutputData[OutputData.Count - 1];
         }
 
-        private static void InterpretIntCode(int[] testInput)
+        public static int PartTwo()
+        {
+            int[] testInput = Input.TestInput;
+
+            InterpretIntCode(testInput, false);
+
+            return OutputData[0];
+        }
+
+        private static void InterpretIntCode(int[] testInput, bool isPartOne)
         {
             int count = 0;
 
@@ -29,9 +38,16 @@ namespace ConsoleApp1.Days.Five
 
                 IntcodeInstruction instructions = GetInstructions(testInput[count]);
 
-                ProcessInstructions(testInput, instructions, count);
+                ProcessInstructions(testInput, instructions, count, isPartOne);
 
-                count += instructions.IndexesToMoveForNextInstruction();
+                if(instructions.UseIndexForNextInstruction)
+                {
+                    count = instructions.IndexForNextInstruction;
+                }
+                else
+                {
+                    count += instructions.IndexesToMoveForNextInstruction;
+                }
             }
         }
 
@@ -77,8 +93,9 @@ namespace ConsoleApp1.Days.Five
             }
         }
 
-        private static void ProcessInstructions(int[] input, IntcodeInstruction instructions, int currentIndex)
+        private static void ProcessInstructions(int[] input, IntcodeInstruction instructions, int currentIndex, bool isPartOne)
         {
+            // strategy pattern would be cleaner
             switch(instructions.Opcode)
             {
                 case OpcodeEnum.Add:
@@ -88,10 +105,22 @@ namespace ConsoleApp1.Days.Five
                     MultiplyBatchOfIntcode(currentIndex, input, instructions);
                     break;
                 case OpcodeEnum.Input:
-                    InputBatchOfIntcode(currentIndex, input, instructions);
+                    InputBatchOfIntcode(currentIndex, input, instructions, isPartOne);
                     break;
                 case OpcodeEnum.Output:
                     OutputBatchOfIntcode(currentIndex, input, instructions);
+                    break;
+                case OpcodeEnum.JumpIfTrue:
+                    JumpIfTrueBatchOfIntcode(currentIndex, input, instructions);
+                    break;
+                case OpcodeEnum.JumpIfFalse:
+                    JumpIfFalseBatchOfIntcode(currentIndex, input, instructions);
+                    break;
+                case OpcodeEnum.LessThan:
+                    LessThanBatchOfIntcode(currentIndex, input, instructions);
+                    break;
+                case OpcodeEnum.Equals:
+                    EqualsBatchOfIntcode(currentIndex, input, instructions);
                     break;
                 case OpcodeEnum.EndProgram:
                     break;
@@ -108,6 +137,7 @@ namespace ConsoleApp1.Days.Five
             int sum = firstAddNum + secondAddNum;
 
             testInput[testInput[index + 3]] = sum;
+            instructions.IndexesToMoveForNextInstruction = 4;
         }
 
         private static void MultiplyBatchOfIntcode(int index, int[] testInput, IntcodeInstruction instructions)
@@ -117,13 +147,15 @@ namespace ConsoleApp1.Days.Five
             int product = firstMultNum * secondMultNum;
 
             testInput[testInput[index + 3]] = product;
+            instructions.IndexesToMoveForNextInstruction = 4;
         }
 
-        private static void InputBatchOfIntcode(int index, int[] testInput, IntcodeInstruction instructions)
+        private static void InputBatchOfIntcode(int index, int[] testInput, IntcodeInstruction instructions, bool isPartOne)
         {
-            int inputValue = 1;
+            int inputValue = isPartOne ? 1 : 5;
             int saveToPosition = testInput[index + 1];
             testInput[saveToPosition] = inputValue;
+            instructions.IndexesToMoveForNextInstruction = 2;
         }
 
         private static void OutputBatchOfIntcode(int index, int[] testInput, IntcodeInstruction instructions)
@@ -138,6 +170,74 @@ namespace ConsoleApp1.Days.Five
                 outputValue = testInput[index + 1];
             }
             OutputData.Add(outputValue);
+            instructions.IndexesToMoveForNextInstruction = 2;
+        }
+
+        public static void JumpIfTrueBatchOfIntcode(int index, int[] testInput, IntcodeInstruction instructions)
+        {
+            int firstParam = instructions.FirstParameterMode == ParameterModesEnum.Immediate ? testInput[index + 1] : testInput[testInput[index + 1]];
+            int secondParam = instructions.SecondParameterMode == ParameterModesEnum.Immediate ? testInput[index + 2] : testInput[testInput[index + 2]];
+            if (firstParam != 0)
+            {
+                testInput[index] = secondParam;
+                instructions.IndexForNextInstruction = secondParam;
+                instructions.UseIndexForNextInstruction = true;
+            }
+            else
+            {
+                instructions.IndexesToMoveForNextInstruction = 3;
+            }
+        }
+
+        public static void JumpIfFalseBatchOfIntcode(int index, int[] testInput, IntcodeInstruction instructions)
+        {
+            int firstParam = instructions.FirstParameterMode == ParameterModesEnum.Immediate ? testInput[index + 1] : testInput[testInput[index + 1]];
+            int secondParam = instructions.SecondParameterMode == ParameterModesEnum.Immediate ? testInput[index + 2] : testInput[testInput[index + 2]];
+
+            if (firstParam == 0)
+            {
+                testInput[index] = secondParam;
+                instructions.IndexForNextInstruction = secondParam;
+                instructions.UseIndexForNextInstruction = true;
+            }
+            else
+            {
+                instructions.IndexesToMoveForNextInstruction = 3;
+            }
+        }
+
+        public static void LessThanBatchOfIntcode(int index, int[] testInput, IntcodeInstruction instructions)
+        {
+            int firstParam = instructions.FirstParameterMode == ParameterModesEnum.Immediate ? testInput[index + 1] : testInput[testInput[index + 1]];
+            int secondParam = instructions.SecondParameterMode == ParameterModesEnum.Immediate ? testInput[index + 2] : testInput[testInput[index + 2]];
+            int thirdParam =  testInput[index + 3];
+
+            if (firstParam < secondParam)
+            {
+                testInput[thirdParam] = 1;
+            }
+            else
+            {
+                testInput[thirdParam] = 0;
+            }
+            instructions.IndexesToMoveForNextInstruction = 4;
+        }
+
+        private static void EqualsBatchOfIntcode(int index, int[] testInput, IntcodeInstruction instructions)
+        {
+            int firstParam = instructions.FirstParameterMode == ParameterModesEnum.Immediate ? testInput[index + 1] : testInput[testInput[index + 1]];
+            int secondParam = instructions.SecondParameterMode == ParameterModesEnum.Immediate ? testInput[index + 2] : testInput[testInput[index + 2]];
+            int thirdParam = testInput[index + 3];
+
+            if (firstParam == secondParam)
+            {
+                testInput[thirdParam] = 1;
+            }
+            else
+            {
+                testInput[thirdParam] = 0;
+            }
+            instructions.IndexesToMoveForNextInstruction = 4;
         }
 
         private static OpcodeEnum GetOpcode(int value)
@@ -148,6 +248,10 @@ namespace ConsoleApp1.Days.Five
                 2 => OpcodeEnum.Multiply,
                 3 => OpcodeEnum.Input,
                 4 => OpcodeEnum.Output,
+                5 => OpcodeEnum.JumpIfTrue,
+                6 => OpcodeEnum.JumpIfFalse,
+                7 => OpcodeEnum.LessThan,
+                8 => OpcodeEnum.Equals,
                 99 => OpcodeEnum.EndProgram,
                 _ => throw new Exception("Invalid opcode"),
             };
