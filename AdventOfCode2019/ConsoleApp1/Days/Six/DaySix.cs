@@ -22,6 +22,32 @@ namespace ConsoleApp1.Days.Six
             return totalOrbits;
         }
 
+        public static int PartTwo()
+        {
+            String[] testInput = Input.TestInput;
+            List<Planet> planets = LoadPlanets(testInput);
+
+            Planet you = planets.Where(x => x.Name == "YOU").First();
+            Planet san = planets.Where(x => x.Name == "SAN").First();
+            you.CalculateIndirectOrbits();
+            san.CalculateIndirectOrbits();
+
+            // which indirect orbits do we share
+            List<Planet> sharedIndirectOrbits = you.PlanetsIndirectlyOrbited.Where(x => san.PlanetsIndirectlyOrbited.Any(y => y.Name == x.Name)).ToList<Planet>();
+
+            List<int> steps = new List<int>();
+            // how many steps to each?
+            foreach(Planet planet in sharedIndirectOrbits)
+            {
+                // how many steps for you to get there
+                int stepsForYou = you.PlanetsIndirectlyOrbited.IndexOf(planet) + 1;
+                int stepsForSan = san.PlanetsIndirectlyOrbited.IndexOf(planet) + 1;
+                steps.Add(stepsForYou + stepsForSan);
+            }
+
+            return steps.Min(x => x);
+        }
+
         public static List<Planet> LoadPlanets(String[] testInput)
         {
             List<Planet> planets = new List<Planet>();

@@ -12,7 +12,7 @@ namespace ConsoleApp1
     {
         static void Main(string[] args)
         {
-            Console.WriteLine(DaySix.PartOne());
+            Console.WriteLine(DaySix.PartTwo());
         }
     }
 }

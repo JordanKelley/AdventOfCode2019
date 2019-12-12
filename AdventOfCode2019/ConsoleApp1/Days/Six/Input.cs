@@ -1600,7 +1600,9 @@ namespace ConsoleApp1.Days.Six
 "D)I",
 "E)J",
 "J)K",
-"K)L"
+"K)L",
+"K)YOU",
+"I)SAN"
         };
     }
 }
