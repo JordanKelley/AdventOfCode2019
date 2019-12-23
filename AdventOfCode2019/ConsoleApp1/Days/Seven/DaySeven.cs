@@ -25,6 +25,55 @@ namespace ConsoleApp1.Days.Seven
             return outputsForPhaseSettingSequences.Max(x => x);
         }
 
+        public static int PartTwo()
+        {
+            List<int> outputsForPhaseSettingSequences = new List<int>();
+
+            int[] phaseSettingSequence = new int[]
+            {
+                9, 8, 7, 6, 5
+            };
+            var allPosibleCombinations = GetPhaseSettingSequenceCombinations(phaseSettingSequence);
+
+            foreach (var sequence in allPosibleCombinations)
+            {
+                int outputForPhaseSettingSequences = RunSequenceWithFeedbackLoop(sequence.ToArray());
+                outputsForPhaseSettingSequences.Add(outputForPhaseSettingSequences);
+            }
+            return outputsForPhaseSettingSequences.Max(x => x);
+        }
+
+        private static int RunSequenceWithFeedbackLoop(int[] phaseSettingSequence)
+        {
+            List<IntcodeComputer> computers = new List<IntcodeComputer>();
+            int secondInputValue = 0;
+
+            // first run of each computer
+            foreach (int phaseSetting in phaseSettingSequence)
+            {
+                int[] input = new List<int>(InputData).ToArray();
+                IntcodeComputer computer = new IntcodeComputer(input, phaseSetting, secondInputValue);
+                computer.ProcessIntcodeUntilOutput();
+                computers.Add(computer);
+                secondInputValue = computer.OutputData[0];
+            }
+
+            // keep going until 99 is hit on all of them and return output of E
+            while(computers.Any(x => !x.HitOpcode99))
+            {
+                foreach(var computer in computers.Where(x => !x.HitOpcode99))
+                {
+                    int indexOfPreviousComputer = computers.IndexOf(computer) == 0 ? computers.Count - 1 : computers.IndexOf(computer) - 1;
+                    secondInputValue = computers[indexOfPreviousComputer].OutputData.Last();
+                    computer.SetSecondInputValue(secondInputValue);
+                    computer.ProcessIntcodeUntilOutput();
+                    secondInputValue = computer.OutputData.Last();
+                }
+            }
+
+            return secondInputValue;
+        }
+
         private static int RunSequence(int[] phaseSettingSequence)
         {
             int secondInputValue = 0;
@@ -32,6 +81,7 @@ namespace ConsoleApp1.Days.Seven
             {
                 int[] input = new List<int>(InputData).ToArray();
                 IntcodeComputer computer = new IntcodeComputer(input, phaseSetting, secondInputValue);
+                computer.ProcessAllIntcode();
                 secondInputValue = computer.OutputData[0];
             }
             return secondInputValue;

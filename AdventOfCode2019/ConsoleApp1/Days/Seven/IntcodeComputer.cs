@@ -8,20 +8,57 @@ namespace ConsoleApp1.Days.Seven
     {
         private int[] Intcode;
         public List<int> OutputData;
-        private int InputValue;
+        public bool HitOpcode99;
+        public int PhaseSetting;
         private int SecondInputValue;
         private int InputIterations = 0;
-        public IntcodeComputer(int[] intCode, int inputValue, int secondInputValue)
+        private int Count = 0;
+        private bool UsedSecondInputValue;
+        public IntcodeComputer(int[] intCode, int phaseSetting, int secondInputValue)
         {
             Intcode = intCode;
             OutputData = new List<int>();
-            InputValue = inputValue;
+            PhaseSetting = phaseSetting;
             SecondInputValue = secondInputValue;
-
-            InterpretIntCode();
         }
 
-        private void InterpretIntCode()
+        public void SetSecondInputValue(int secondInputValue)
+        {
+            SecondInputValue = secondInputValue;
+        }
+
+        public void ProcessIntcodeUntilOutput()
+        {
+            while(Count < Intcode.Length)
+            {
+                if (Intcode[Count] == 99)
+                {
+                    HitOpcode99 = true;
+                    return;
+                }
+
+                IntcodeInstruction instructions = GetInstructions(Intcode[Count]);
+
+                if(instructions.Opcode == OpcodeEnum.Input && UsedSecondInputValue)
+                {
+                    UsedSecondInputValue = false;
+                    return;
+                }
+
+                ProcessInstructions(instructions, Count);
+
+                if (instructions.UseIndexForNextInstruction)
+                {
+                    Count = instructions.IndexForNextInstruction;
+                }
+                else
+                {
+                    Count += instructions.IndexesToMoveForNextInstruction;
+                }
+            }
+        }
+
+        public void ProcessAllIntcode()
         {
             int count = 0;
 
@@ -29,6 +66,7 @@ namespace ConsoleApp1.Days.Seven
             {
                 if (Intcode[count] == 99)
                 {
+                    HitOpcode99 = true;
                     return;
                 }
 
@@ -150,8 +188,9 @@ namespace ConsoleApp1.Days.Seven
         {
             InputIterations++;
             int saveToPosition = Intcode[index + 1];
-            Intcode[saveToPosition] = InputIterations > 1 ? SecondInputValue : InputValue;
+            Intcode[saveToPosition] = InputIterations > 1 ? SecondInputValue : PhaseSetting;
             instructions.IndexesToMoveForNextInstruction = 2;
+            UsedSecondInputValue = InputIterations > 1;
         }
 
         private void OutputBatchOfIntcode(int index, IntcodeInstruction instructions)
