@@ -23,5 +23,14 @@ namespace ConsoleApp1.Days.Eight
 
             public static int Height = 2;
         }
+
+        public static class PartTwoSmallTestData
+        {
+            public static string Data = "0222112222120000";
+
+            public static int Width = 2;
+
+            public static int Height = 2;
+        }
     }
 }

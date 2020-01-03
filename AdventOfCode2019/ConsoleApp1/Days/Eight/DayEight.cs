@@ -20,6 +20,57 @@ namespace ConsoleApp1.Days.Eight
             return NumberOf1DigitsMultipliedByNumberOf2Digits(layerWithFewestZeros);
         }
 
+        public static List<List<string>> PartTwo()
+        {
+            string inputData = Input.PartTwoSmallTestData.Data;
+            int width = Input.PartTwoSmallTestData.Width;
+            int height = Input.PartTwoSmallTestData.Height;
+
+            List<List<string>> image = ConstructImage(inputData, width, height);
+
+            return DecodeImage(image, width, height);
+        }
+
+        private static List<List<string>> DecodeImage(List<List<string>> image, int width, int height)
+        {
+            List<int> minimums = new List<int>();
+            List<List<string>> decodedImage = new List<List<string>>();
+            int numberOfLayersForDecodedImage = image.Count / 2;
+
+            foreach(List<string> layer in image)
+            {
+                var min = layer.SelectMany(x => x).Select(x => x.ToString()).Select(x => Int32.Parse(x)).Min(x => x);
+                minimums.Add(min);
+            }
+
+            var minimumsToString = minimums.Select(x => x.ToString());
+
+            String input = "";
+
+            foreach(var s in minimumsToString)
+            {
+                input = input + s;
+            }
+
+            return ConstructImage(input, width, height);
+        }
+
+        private static List<List<string>> DecodeImage(List<List<string>> image)
+        {
+            List<string> firstLayer = image[0];
+            List<string> decodedPixels = new List<string>();
+
+            for(int i = 0; i < firstLayer.Count; i++)
+            {
+                if(firstLayer[i] == "1" | firstLayer[i] == "0")
+                {
+
+                }
+            }
+
+            throw new NotImplementedException();
+        }
+
         private static List<List<string>> ConstructImage(string inputData, int width, int height)
         {
             int numberOfLayers = inputData.Length / width / height;

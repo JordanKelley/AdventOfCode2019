@@ -14,7 +14,8 @@ namespace ConsoleApp1
     {
         static void Main(string[] args)
         {
-            Console.WriteLine(DayEight.PartOne());
+            var x = DayEight.PartTwo();
+            Console.WriteLine(DayEight.PartTwo());
         }
     }
 }
